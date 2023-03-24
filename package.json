@@ -3,7 +3,23 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build:base": "npx esbuild src/game/index.mts --bundle --outfile=dist/index.mjs",
+    "watch:dev": "yarn build:base --watch",
+    "dev": "concurrently --kill-others \"yarn watch:dev\" \"node server.mjs\""
+  },
   "devDependencies": {
+    "@types/http-server": "^0.12.1",
+    "concurrently": "^7.6.0",
+    "dotenv": "^16.0.3",
+    "esbuild": "^0.17.12",
+    "http-server": "^14.1.1",
+    "pixi.js": "^7.2.2",
     "typescript": "^5.1.0-dev.20230324"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
   }
 }
