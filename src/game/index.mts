@@ -2,8 +2,7 @@ import * as pixi from "pixi.js";
 
 export async function gameMain() {
   const app = new pixi.Application({
-    height: 1039,
-    width: window.innerWidth,
+    resizeTo: window,
     autoDensity: true,
   });
 
