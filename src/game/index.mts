@@ -3,10 +3,12 @@ import * as pixi from "pixi.js";
 import matter from "matter-js";
 import { basicEntity } from "./entity.mjs";
 import { Player } from "./player.mjs";
-import { playRandomNote } from "./sfx.mjs";
+import { PatternSFX } from "./sfx.mjs";
 
 export async function main() {
   const gravity = matter.Vector.create(0, 0.5);
+
+  const sfx = new PatternSFX();
 
   const app = new pixi.Application({
     resizeTo: window,
@@ -88,7 +90,7 @@ export async function main() {
   });
 
   const onLaunch = (x: number, y: number) => {
-    playRandomNote();
+    sfx.playNote();
     player.slice(matter.Vector.create(x, y));
   };
 
