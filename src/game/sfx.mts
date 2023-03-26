@@ -11,6 +11,9 @@ export const DEFAULT_SFX = {
   G4: new Howl({ src: ["assets/sfx/G4.wav"] }),
   G5: new Howl({ src: ["assets/sfx/G5.wav"] }),
   G6: new Howl({ src: ["assets/sfx/G6.wav"] }),
+  E4: new Howl({ src: ["assets/sfx/E4.wav"] }),
+  E5: new Howl({ src: ["assets/sfx/E5.wav"] }),
+  E6: new Howl({ src: ["assets/sfx/E6.wav"] }),
 };
 
 export function playRandomNote() {
