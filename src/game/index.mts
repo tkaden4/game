@@ -2,17 +2,30 @@ import * as pixi from "pixi.js";
 
 import matter from "matter-js";
 import { basicEntity } from "./entity.mjs";
+import { note } from "./notes.mjs";
 import { Player } from "./player.mjs";
-import { BasicNotePlayer, PatternNoteSequence } from "./sfx.mjs";
+import { FontNotePlayer, PatternNoteSequence, PatternType } from "./sfx.mjs";
 
 export async function main() {
   const gravity = matter.Vector.create(0, 0.5);
 
+  const C2 = note.create("C", 2);
+  const C8 = note.create("C", 8);
+
+  const [glass, pipe] = await Promise.all([
+    FontNotePlayer.load("assets/sfx/fonts/glass.wav", 2000, C2, C8),
+    await FontNotePlayer.load("assets/sfx/fonts/pipe.wav", 2000, C2, C8),
+  ]);
+
+  const instruments = {
+    glass,
+    pipe,
+  };
+
   const sfx = new PatternNoteSequence(
-    new BasicNotePlayer("assets/sfx/notes.wav", 48, 2000, {
-      chroma: "C",
-      octave: 3,
-    })
+    instruments.glass,
+    [note.create("C", 4), note.create("G", 4), note.create("D", 5)],
+    PatternType.Ascending
   );
 
   const app = new pixi.Application({
@@ -20,8 +33,6 @@ export async function main() {
     autoDensity: true,
     antialias: false,
   });
-
-  const gfx = new pixi.Graphics();
 
   document.body.appendChild(app.view as any);
 
@@ -46,7 +57,6 @@ export async function main() {
   const player = new Player(box);
 
   app.stage.addChild(box.sprite);
-  app.stage.addChild(gfx);
 
   function createWalls(wallSize: number) {
     return matter.Composite.create({

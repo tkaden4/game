@@ -10,23 +10,39 @@ export interface NotePlayer {
   playNote(chroma: string, octave: number): void;
 }
 
-export class BasicNotePlayer implements NotePlayer {
+export class FontNotePlayer implements NotePlayer {
   private howl: Howl;
 
-  constructor(instrumentPath: string, notes: number, length: number, startNote: note.Note) {
+  static async load(fontPath: string, length: number, startNote: note.Note, endNote: note.Note) {
     const sprites: Array<[string, [start: number, end: number]]> = [];
     let n = startNote;
-    for (let i = 0; i < notes; ++i) {
+    const goalPost = note.inc(endNote);
+    for (let i = 0; !note.eq(n, goalPost); ++i) {
       sprites.push([note.toString(n), [i * length, length]]);
       n = note.inc(n);
     }
     const sprite = Object.fromEntries(sprites);
 
-    this.howl = new Howl({
-      src: instrumentPath,
+    const howl = new Howl({
+      src: fontPath,
       sprite,
-      preload: true,
     });
+
+    return new Promise<FontNotePlayer>((resolve, reject) => {
+      howl.on("load", () => {
+        resolve(new FontNotePlayer(howl));
+      });
+
+      howl.on("loaderror", () => {
+        reject("unable to load");
+      });
+
+      howl.load();
+    });
+  }
+
+  private constructor(howl: Howl) {
+    this.howl = howl;
   }
 
   playNote(chroma: string, octave: number): void {
@@ -44,17 +60,33 @@ export class RandomNoteSequence {
   }
 }
 
-export class PatternNoteSequence {
-  octave = 0;
-  note = 0;
-  octaves = [3, 4, 5, 6];
-  pattern = ["C", "D", "E", "G", "A"];
+export enum PatternType {
+  Ascending,
+  Descending,
+  Alternating,
+}
 
-  constructor(private notePlayer: NotePlayer) {}
+export class PatternNoteSequence {
+  idx = 0;
+  direction = 1;
+
+  constructor(private notePlayer: NotePlayer, private pattern: note.Note[], private type: PatternType) {
+    switch (type) {
+      case PatternType.Alternating:
+      case PatternType.Ascending:
+        this.idx = 0;
+        this.direction = 1;
+        break;
+      case PatternType.Descending:
+        this.idx = pattern.length - 1;
+        this.direction = -1;
+        break;
+    }
+  }
 
   playNote(): void {
-    this.notePlayer.playNote(this.pattern[this.note], this.octaves[this.octave]);
-    this.note = (this.note + 1) % this.pattern.length;
-    this.octave = this.note === 0 ? (this.octave + 1) % this.octaves.length : this.octave;
+    this.notePlayer.playNote(this.pattern[this.idx].chroma, this.pattern[this.idx].octave);
+
+    this.idx = (this.idx + 1) % this.pattern.length;
   }
 }

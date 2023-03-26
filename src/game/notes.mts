@@ -13,6 +13,10 @@ export namespace note {
     };
   }
 
+  export function eq(a: Note, b: Note) {
+    return a.chroma === b.chroma && a.octave === b.octave;
+  }
+
   export function inc(note: Note): Note {
     const chroma = chromaIndex(note.chroma);
     const newChroma = (chroma + 1) % 12;
