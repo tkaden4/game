@@ -3,6 +3,7 @@ import * as pixi from "pixi.js";
 import matter from "matter-js";
 import { basicEntity } from "./entity.mjs";
 import { Player } from "./player.mjs";
+import { playRandomNote } from "./sfx.mjs";
 
 export async function main() {
   const gravity = matter.Vector.create(0, 0.5);
@@ -28,7 +29,7 @@ export async function main() {
   });
   const engine = matter.Engine.create({ world });
 
-  const box = basicEntity(pixi.Sprite.from("assets/sprite.png"), {
+  const box = basicEntity(pixi.Sprite.from("assets/gfx/sprite.png"), {
     x: 0,
     y: 0,
     w: 40,
@@ -86,14 +87,19 @@ export async function main() {
     }
   });
 
+  const onLaunch = (x: number, y: number) => {
+    playRandomNote();
+    player.slice(matter.Vector.create(x, y));
+  };
+
   window.addEventListener("touchstart", (ev) => {
     const touch = ev.touches[0];
     const x = touch.pageX;
     const y = touch.pageY;
-    player.slice(matter.Vector.create(x, y));
+    onLaunch(x, y);
   });
   window.addEventListener("click", (ev) => {
-    player.slice(matter.Vector.create(ev.x, ev.y));
+    onLaunch(ev.x, ev.y);
   });
 
   app.ticker.add(() => {
