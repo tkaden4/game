@@ -3,12 +3,17 @@ import * as pixi from "pixi.js";
 import matter from "matter-js";
 import { basicEntity } from "./entity.mjs";
 import { Player } from "./player.mjs";
-import { PatternSFX } from "./sfx.mjs";
+import { BasicNotePlayer, PatternNoteSequence } from "./sfx.mjs";
 
 export async function main() {
   const gravity = matter.Vector.create(0, 0.5);
 
-  const sfx = new PatternSFX();
+  const sfx = new PatternNoteSequence(
+    new BasicNotePlayer("assets/sfx/notes.wav", 48, 2000, {
+      chroma: "C",
+      octave: 3,
+    })
+  );
 
   const app = new pixi.Application({
     resizeTo: window,
