@@ -69,6 +69,12 @@ export async function main() {
     }
   });
 
+  window.addEventListener("touchstart", (ev) => {
+    const touch = ev.touches[0];
+    const x = touch.pageX;
+    const y = touch.pageY;
+    player.slice(matter.Vector.create(x, y));
+  });
   window.addEventListener("click", (ev) => {
     player.slice(matter.Vector.create(ev.x, ev.y));
   });
