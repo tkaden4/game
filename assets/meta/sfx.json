@@ -1,0 +1,10 @@
+[
+  {
+    "path": "assets/sfx/fonts/pipe.mp3",
+    "name": "pipe"
+  },
+  {
+    "path": "assets/sfx/fonts/glass.mp3",
+    "name": "glass"
+  }
+]

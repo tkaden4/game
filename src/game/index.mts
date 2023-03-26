@@ -1,29 +1,35 @@
 import * as pixi from "pixi.js";
 
+import axios from "axios";
 import matter from "matter-js";
 import { basicEntity } from "./entity.mjs";
 import { note } from "./notes.mjs";
 import { Player } from "./player.mjs";
-import { FontNotePlayer, NoteSequence, PatternNoteSequence, PatternType } from "./sfx.mjs";
+import { FontNotePlayer, NotePlayer, NoteSequence, PatternNoteSequence, PatternType } from "./sfx.mjs";
 
 export async function main() {
-  const gravity = matter.Vector.create(0, 0.5);
-
-  const C2 = note.create("C", 2);
-  const C8 = note.create("C", 8);
-
-  const sequence = note.parseSeq("C5", "E5", "F5", "A5", "C6", "G5", "B5", "D5", "B4");
-
-  const [glass, pipe] = await Promise.all([
-    FontNotePlayer.load("assets/sfx/fonts/glass.wav", 2000, C2, C8),
-    FontNotePlayer.load("assets/sfx/fonts/pipe.wav", 2000, C2, C8),
+  // Load asset metadata
+  const [gfx_meta, sfx_meta] = await Promise.all([
+    axios.get("assets/meta/gfx.json").then((x) => x.data),
+    axios.get("assets/meta/sfx.json").then((x) => x.data),
   ]);
 
-  const instruments = {
-    glass,
-    pipe,
-  };
+  // Load all sprites
+  const sprites: Record<string, pixi.Sprite> = {};
+  for (const sprite of gfx_meta) {
+    sprites[sprite.name] = pixi.Sprite.from(sprite.path);
+  }
 
+  // Load the instruments
+  const C2 = note.create("C", 2);
+  const C8 = note.create("C", 8);
+  const instruments: Record<string, NotePlayer> = {};
+  for (const instrument of sfx_meta) {
+    instruments[instrument.name] = await FontNotePlayer.load(instrument.path, 2000, C2, C8);
+  }
+
+  // Set up the sfx player
+  const sequence = note.parseSeq("C5", "E5", "G5", "B5", "Db6");
   const sfx: NoteSequence = new PatternNoteSequence(instruments.pipe, sequence, PatternType.Alternating);
 
   const app = new pixi.Application({
@@ -36,21 +42,10 @@ export async function main() {
 
   app.renderer.events.cursorStyles.default = "crosshair";
 
-  const world = matter.World.create({
-    gravity: {
-      x: gravity.x,
-      y: gravity.y,
-      scale: 1,
-    },
-  });
+  const world = matter.World.create({});
   const engine = matter.Engine.create({ world });
 
-  const _colors = ["blue", "green", "orange", "pink", "purple", "red", "yellow"].map(
-    (x) => [x, pixi.Sprite.from(`assets/gfx/${x}.png`)] as const
-  );
-  const colors = Object.fromEntries(_colors);
-
-  const box = basicEntity(colors.pink, {
+  const box = basicEntity(sprites.purple, {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
     w: 40,

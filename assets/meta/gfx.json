@@ -1,0 +1,30 @@
+[
+  {
+    "path": "assets/gfx/yellow.png",
+    "name": "yellow"
+  },
+  {
+    "path": "assets/gfx/red.png",
+    "name": "red"
+  },
+  {
+    "path": "assets/gfx/purple.png",
+    "name": "purple"
+  },
+  {
+    "path": "assets/gfx/pink.png",
+    "name": "pink"
+  },
+  {
+    "path": "assets/gfx/orange.png",
+    "name": "orange"
+  },
+  {
+    "path": "assets/gfx/green.png",
+    "name": "green"
+  },
+  {
+    "path": "assets/gfx/blue.png",
+    "name": "blue"
+  }
+]
