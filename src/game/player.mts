@@ -11,7 +11,7 @@ export class Player {
 
   static forceVector(from: Vector, to: Vector) {
     const rawVector = matter.Vector.create(to.x - from.x, to.y - from.y);
-    const distance = matter.Vector.magnitude(rawVector);
+    const distance = Math.max(matter.Vector.magnitude(rawVector), 400);
     const normalized = matter.Vector.div(matter.Vector.normalise(rawVector), 10);
     return matter.Vector.mult(normalized, distance / 400);
   }
