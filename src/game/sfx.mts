@@ -39,8 +39,6 @@ export class PatternSFX {
     const sfx = DEFAULT_SFX[note];
     sfx?.play();
 
-    console.log(note);
-
     this.note = (this.note + 1) % this.pattern.length;
     this.octave = this.note === 0 ? (this.octave + 1) % this.octaves.length : this.octave;
   }

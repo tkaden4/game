@@ -20,7 +20,7 @@ export async function main() {
 
   document.body.appendChild(app.view as any);
 
-  app.renderer.plugins.interaction.cursorStyles.default = "crosshair";
+  app.renderer.events.cursorStyles.default = "crosshair";
 
   const world = matter.World.create({
     gravity: {
