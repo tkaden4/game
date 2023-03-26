@@ -125,7 +125,7 @@ export async function main() {
     player.update();
   });
 }
-// Start the game on page load
-window.onload = () => {
+
+window.addEventListener("load", () => {
   main();
-};
+});
