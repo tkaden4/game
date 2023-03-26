@@ -4,7 +4,7 @@ import matter from "matter-js";
 import { basicEntity } from "./entity.mjs";
 import { note } from "./notes.mjs";
 import { Player } from "./player.mjs";
-import { FontNotePlayer, PatternNoteSequence, PatternType } from "./sfx.mjs";
+import { FontNotePlayer, NoteSequence, PatternNoteSequence, PatternType } from "./sfx.mjs";
 
 export async function main() {
   const gravity = matter.Vector.create(0, 0.5);
@@ -12,7 +12,7 @@ export async function main() {
   const C2 = note.create("C", 2);
   const C8 = note.create("C", 8);
 
-  const sequence = note.parseSeq("C4", "E4", "F4", "G4", "B4");
+  const sequence = note.parseSeq("C5", "E5", "F5", "A5", "C6", "G5", "B5", "D5", "B4");
 
   const [glass, pipe] = await Promise.all([
     FontNotePlayer.load("assets/sfx/fonts/glass.wav", 2000, C2, C8),
@@ -24,7 +24,7 @@ export async function main() {
     pipe,
   };
 
-  const sfx = new PatternNoteSequence(instruments.pipe, sequence, PatternType.Alternating);
+  const sfx: NoteSequence = new PatternNoteSequence(instruments.pipe, sequence, PatternType.Alternating);
 
   const app = new pixi.Application({
     resizeTo: window,
@@ -45,7 +45,12 @@ export async function main() {
   });
   const engine = matter.Engine.create({ world });
 
-  const box = basicEntity(pixi.Sprite.from("assets/gfx/sprite.png"), {
+  const _colors = ["blue", "green", "orange", "pink", "purple", "red", "yellow"].map(
+    (x) => [x, pixi.Sprite.from(`assets/gfx/${x}.png`)] as const
+  );
+  const colors = Object.fromEntries(_colors);
+
+  const box = basicEntity(colors.pink, {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
     w: 40,

@@ -14,6 +14,9 @@ export namespace note {
       throw new Error(`${candidate} does not contain a valid note`);
     }
     const octave = candidate.substring(note.length, candidate.length);
+    if (!/(\d+)/g.test(octave)) {
+      throw new Error(`${candidate} does not contain a valid octave number`);
+    }
     return {
       chroma: note,
       octave: _.parseInt(octave),
