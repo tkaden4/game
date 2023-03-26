@@ -8,18 +8,17 @@
     "build:base": "npx esbuild src/game/index.mts --bundle --outfile=dist/index.mjs",
     "build": "yarn build:base --minify && node scripts/assets.mjs",
     "watch:dev": "yarn build:base --watch",
-    "dev": "concurrently --kill-others \"yarn watch:dev\" \"node server.mjs\""
+    "dev": "concurrently --kill-others \"yarn watch:dev\" \"node server.mjs\" \"node scripts/assets.mjs --watch\""
   },
   "devDependencies": {
     "@types/howler": "^2.2.7",
-    "@types/http-server": "^0.12.1",
     "@types/lodash": "^4.14.191",
     "@types/matter-js": "^0.18.2",
     "concurrently": "^7.6.0",
     "dotenv": "^16.0.3",
     "esbuild": "^0.17.12",
     "glob": "^9.3.2",
-    "http-server": "^14.1.1",
+    "node-watch": "^0.7.3",
     "pixi.js": "^7.2.2",
     "typescript": "^5.1.0-dev.20230324"
   },
