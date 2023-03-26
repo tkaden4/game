@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 export namespace note {
   const notes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
@@ -5,6 +7,22 @@ export namespace note {
     chroma: string;
     octave: number;
   };
+
+  export function parse(candidate: string): note.Note {
+    const note = notes.find((x) => candidate.includes(x));
+    if (note === undefined) {
+      throw new Error(`${candidate} does not contain a valid note`);
+    }
+    const octave = candidate.substring(note.length, candidate.length);
+    return {
+      chroma: note,
+      octave: _.parseInt(octave),
+    };
+  }
+
+  export function parseSeq(...notes: string[]): note.Note[] {
+    return notes.map((x) => parse(x));
+  }
 
   export function create(chroma: string, octave: number): Note {
     return {

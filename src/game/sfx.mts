@@ -50,7 +50,7 @@ export class FontNotePlayer implements NotePlayer {
   }
 }
 
-export class RandomNoteSequence {
+export class RandomNoteSequence implements NoteSequence {
   constructor(private notePlayer: NotePlayer) {}
 
   playNote() {
@@ -66,11 +66,16 @@ export enum PatternType {
   Alternating,
 }
 
-export class PatternNoteSequence {
+export class IterativeNoteSequence implements NoteSequence {
   idx = 0;
   direction = 1;
 
-  constructor(private notePlayer: NotePlayer, private pattern: note.Note[], private type: PatternType) {
+  constructor(
+    private player: NotePlayer,
+    private length: number,
+    private type: PatternType,
+    private nextNote: (i: number) => note.Note
+  ) {
     switch (type) {
       case PatternType.Alternating:
       case PatternType.Ascending:
@@ -78,15 +83,42 @@ export class PatternNoteSequence {
         this.direction = 1;
         break;
       case PatternType.Descending:
-        this.idx = pattern.length - 1;
+        this.idx = length - 1;
         this.direction = -1;
         break;
     }
   }
 
-  playNote(): void {
-    this.notePlayer.playNote(this.pattern[this.idx].chroma, this.pattern[this.idx].octave);
+  playNote() {
+    const note = this.nextNote(this.idx);
+    this.player.playNote(note.chroma, note.octave);
+    switch (this.type) {
+      case PatternType.Ascending:
+        this.idx++;
+        break;
+      case PatternType.Descending:
+        this.idx--;
+        break;
+      case PatternType.Alternating:
+        this.idx = this.idx + this.direction;
+        if (this.idx >= this.length) {
+          this.idx = this.length - 2;
+          this.direction = -1;
+        } else if (this.idx < 0) {
+          this.idx = 1;
+          this.direction = 1;
+        }
+        break;
+    }
+    this.idx = (this.idx + this.length) % this.length;
+  }
+}
 
-    this.idx = (this.idx + 1) % this.pattern.length;
+export class PatternNoteSequence extends IterativeNoteSequence {
+  idx = 0;
+  direction = 1;
+
+  constructor(notePlayer: NotePlayer, pattern: note.Note[], type: PatternType) {
+    super(notePlayer, pattern.length, type, (i) => pattern[i]);
   }
 }

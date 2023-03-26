@@ -12,9 +12,11 @@ export async function main() {
   const C2 = note.create("C", 2);
   const C8 = note.create("C", 8);
 
+  const sequence = note.parseSeq("C4", "E4", "F4", "G4", "B4");
+
   const [glass, pipe] = await Promise.all([
     FontNotePlayer.load("assets/sfx/fonts/glass.wav", 2000, C2, C8),
-    await FontNotePlayer.load("assets/sfx/fonts/pipe.wav", 2000, C2, C8),
+    FontNotePlayer.load("assets/sfx/fonts/pipe.wav", 2000, C2, C8),
   ]);
 
   const instruments = {
@@ -22,16 +24,12 @@ export async function main() {
     pipe,
   };
 
-  const sfx = new PatternNoteSequence(
-    instruments.glass,
-    [note.create("C", 4), note.create("G", 4), note.create("D", 5)],
-    PatternType.Ascending
-  );
+  const sfx = new PatternNoteSequence(instruments.pipe, sequence, PatternType.Alternating);
 
   const app = new pixi.Application({
     resizeTo: window,
     autoDensity: true,
-    antialias: false,
+    antialias: true,
   });
 
   document.body.appendChild(app.view as any);
