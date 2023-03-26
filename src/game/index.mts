@@ -29,8 +29,8 @@ export async function main() {
   const engine = matter.Engine.create({ world });
 
   const box = basicEntity(pixi.Sprite.from("assets/sprite.png"), {
-    x: 100,
-    y: 100,
+    x: 0,
+    y: 0,
     w: 40,
     h: 40,
   });
