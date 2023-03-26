@@ -58,20 +58,20 @@ export async function main() {
 
   const mousePosition = matter.Vector.create();
 
-  window.onmousemove = (ev) => {
+  window.addEventListener("mousemove", (ev) => {
     mousePosition.x = ev.x;
     mousePosition.y = ev.y;
-  };
+  });
 
-  window.onkeydown = (ev) => {
+  window.addEventListener("keydown", (ev) => {
     if (ev.key === " ") {
       player.jump();
     }
-  };
+  });
 
-  window.onclick = (ev) => {
+  window.addEventListener("click", (ev) => {
     player.slice(matter.Vector.create(ev.x, ev.y));
-  };
+  });
 
   app.ticker.add(() => {
     matter.Engine.update(engine, Math.floor(app.ticker.deltaMS));
