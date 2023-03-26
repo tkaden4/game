@@ -32,8 +32,8 @@ export async function main() {
   const engine = matter.Engine.create({ world });
 
   const box = basicEntity(pixi.Sprite.from("assets/gfx/sprite.png"), {
-    x: 0,
-    y: 0,
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
     w: 40,
     h: 40,
   });
@@ -110,15 +110,15 @@ export async function main() {
     const playerPos = player.entity.body.position;
     if (playerPos.x < 0 || playerPos.x > app.view.width) {
       matter.Body.set(player.entity.body, "position", {
-        x: 0,
-        y: 0,
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
       });
       matter.Body.setVelocity(player.entity.body, { x: 0, y: 0 });
     }
     if (playerPos.y < 0 || playerPos.y > app.view.height) {
       matter.Body.set(player.entity.body, "position", {
-        x: 0,
-        y: 0,
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
       });
       matter.Body.setVelocity(player.entity.body, { x: 0, y: 0 });
     }

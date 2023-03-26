@@ -29,6 +29,9 @@ export class Player {
       const upVec = matter.Vector.create(0, -0.1 * this.jumpStrength);
       matter.Body.applyForce(this.entity.body, this.entity.body.position, upVec);
       this.hasJumped = true;
+      setTimeout(() => {
+        this.hasJumped = false;
+      }, 500);
     }
   }
 
