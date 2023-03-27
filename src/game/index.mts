@@ -42,10 +42,6 @@ export async function main() {
     instruments[instrument.name] = await FontNotePlayer.load(instrument.path, 2000, C2, C8);
   }
 
-  // Set up the sfx player
-  const defaultSequence = note.parseSeq("C5", "E5", "G5", "B5", "Db6", "Eb6");
-  let sfx: NoteSequence = new PatternNoteSequence(instruments.wurli, defaultSequence, PatternType.Alternating);
-
   // Player modes
   const locrian = {
     notes: note.parseSeq("C5", "Db5", "Eb5", "F5", "Gb5", "Ab5", "Bb5", "C6"),
@@ -76,14 +72,20 @@ export async function main() {
     sprite: sprites.pink,
   };
 
+  const instrument = instruments.glass;
+
   const modelist = [locrian, phrygian, aeolian, dorian, mixolydian, ionian, lydian];
   let currentMode = _.random(0, modelist.length - 1);
+
+  // Set up the sfx player
+  const defaultSequence = note.parseSeq("C5", "E5", "G5", "B5", "Db6", "Eb6");
+  let sfx: NoteSequence = new PatternNoteSequence(instrument, defaultSequence, PatternType.Alternating);
 
   const onPlayerChange = () => {
     const cur = modelist[currentMode];
     changeFavicon(cur.sprite.path);
     player.entity.sprite.texture = cur.sprite.sprite.texture;
-    sfx = new PatternNoteSequence(instruments.wurli, cur.notes, PatternType.Alternating);
+    sfx = new PatternNoteSequence(instrument, cur.notes, PatternType.Alternating);
     currentMode = (currentMode + 1) % modelist.length;
   };
 
