@@ -30,7 +30,7 @@ export async function main() {
   const C8 = note.create("C", 8);
   const instruments: Record<string, NotePlayer> = {};
   for (const instrument of sfx_meta) {
-    instruments[instrument.name] = await FontNotePlayer.load(instrument.path, 2000, 200, C2, C8);
+    instruments[instrument.name] = await FontNotePlayer.load(instrument.path, 2000, 2000, C2, C8);
   }
 
   // Player modes
@@ -63,7 +63,7 @@ export async function main() {
     sprite: sprites.pink,
   };
 
-  const instrument = instruments.wurli;
+  const instrument = instruments.glass;
 
   const modelist = [locrian, phrygian, aeolian, dorian, mixolydian, ionian, lydian];
   let currentMode = _.random(0, modelist.length - 1);
