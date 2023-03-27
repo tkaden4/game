@@ -5,7 +5,7 @@ import fs from "node:fs"
 
 function createMetadata() {
   let sfx = [];
-  for (const font of glob.sync("./assets/sfx/fonts/*")) {
+  for (const font of glob.sync("./assets/sfx/instruments/*")) {
     sfx.push({
       path: font.replaceAll("\\", "/"),
       name: path.basename(font, path.extname(font))
