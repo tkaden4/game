@@ -38633,17 +38633,19 @@ ${e2}`);
     color = 16711680;
     alpha = 1;
     jumpStrength = 1;
-    static forceVector(from, to) {
+    static forceVector(from, to, max) {
       const rawVector = import_matter_js2.default.Vector.create(to.x - from.x, to.y - from.y);
-      const distance = Math.max(import_matter_js2.default.Vector.magnitude(rawVector), 400);
-      const normalized = import_matter_js2.default.Vector.div(import_matter_js2.default.Vector.normalise(rawVector), 10);
-      return import_matter_js2.default.Vector.mult(normalized, distance / 400);
+      const rawLength = import_matter_js2.default.Vector.magnitude(rawVector);
+      const normalized = import_matter_js2.default.Vector.normalise(rawVector);
+      const scalingFactor = 0.4;
+      const actualMagnitude = scalingFactor * (Math.min(rawLength, max) / max);
+      return import_matter_js2.default.Vector.mult(normalized, actualMagnitude);
     }
-    slice(to) {
+    slice(to, maxMagnitude) {
       import_matter_js2.default.Body.applyForce(
         this.entity.body,
         this.entity.body.position,
-        Player.forceVector(this.entity.body.position, to)
+        Player.forceVector(this.entity.body.position, to, maxMagnitude)
       );
     }
     jump() {
@@ -38840,36 +38842,43 @@ ${e2}`);
     });
     const player = new Player(box);
     app.stage.addChild(box.sprite);
-    function createWalls(wallSize2) {
+    function createWalls(wallSize2, width, height) {
       return import_matter_js3.default.Composite.create({
         bodies: [
           // Top
-          import_matter_js3.default.Bodies.rectangle(app.view.width / 2, -wallSize2 / 2, app.view.width, wallSize2, {
+          import_matter_js3.default.Bodies.rectangle(width / 2, -wallSize2 / 2, width, wallSize2, {
             isStatic: true
           }),
           // Bottom
-          import_matter_js3.default.Bodies.rectangle(app.view.width / 2, app.view.height + wallSize2 / 2, app.view.width, wallSize2, {
+          import_matter_js3.default.Bodies.rectangle(width / 2, height + wallSize2 / 2, width, wallSize2, {
             isStatic: true
           }),
           // Left
-          import_matter_js3.default.Bodies.rectangle(-wallSize2 / 2, app.view.height / 2, wallSize2, app.view.height, {
+          import_matter_js3.default.Bodies.rectangle(-wallSize2 / 2, height / 2, wallSize2, height, {
             isStatic: true
           }),
           // Right
-          import_matter_js3.default.Bodies.rectangle(app.view.width + wallSize2 / 2, app.view.height / 2, wallSize2, app.view.height, {
+          import_matter_js3.default.Bodies.rectangle(width + wallSize2 / 2, height / 2, wallSize2, height, {
             isStatic: true
           })
         ]
       });
     }
     const wallSize = 1e3;
-    let walls = createWalls(wallSize);
+    let walls = createWalls(wallSize, app.view.width, app.view.height);
     import_matter_js3.default.Composite.add(engine.world, [walls, box.body]);
     const mousePosition = import_matter_js3.default.Vector.create();
-    window.addEventListener("resize", (ev) => {
+    let maxSize = import_matter_js3.default.Vector.magnitude(import_matter_js3.default.Vector.create(app.view.width, app.view.height));
+    const onWindowSizeChange = () => {
+      const x2 = window.innerWidth;
+      const y2 = window.innerHeight;
       import_matter_js3.default.Composite.remove(engine.world, walls);
-      walls = createWalls(wallSize);
+      walls = createWalls(wallSize, x2, y2);
       import_matter_js3.default.Composite.add(engine.world, walls);
+      maxSize = import_matter_js3.default.Vector.magnitude(import_matter_js3.default.Vector.create(x2, y2));
+    };
+    window.addEventListener("resize", (ev) => {
+      onWindowSizeChange();
     });
     window.addEventListener("mousemove", (ev) => {
       mousePosition.x = ev.x;
@@ -38890,7 +38899,7 @@ ${e2}`);
     };
     const onLaunch = (x2, y2) => {
       sfx.playNote();
-      player.slice(import_matter_js3.default.Vector.create(x2, y2));
+      player.slice(import_matter_js3.default.Vector.create(x2, y2), maxSize);
     };
     window.addEventListener("touchstart", (ev) => {
       const touch = ev.touches[0];
@@ -38910,6 +38919,7 @@ ${e2}`);
           y: window.innerHeight / 2
         });
         import_matter_js3.default.Body.setVelocity(player.entity.body, { x: 0, y: 0 });
+        onWindowSizeChange();
       }
       if (playerPos.y < 0 || playerPos.y > app.view.height) {
         import_matter_js3.default.Body.set(player.entity.body, "position", {
@@ -38917,6 +38927,7 @@ ${e2}`);
           y: window.innerHeight / 2
         });
         import_matter_js3.default.Body.setVelocity(player.entity.body, { x: 0, y: 0 });
+        onWindowSizeChange();
       }
       player.update();
     });

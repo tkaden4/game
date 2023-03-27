@@ -111,23 +111,23 @@ export async function main() {
 
   app.stage.addChild(box.sprite);
 
-  function createWalls(wallSize: number) {
+  function createWalls(wallSize: number, width: number, height: number) {
     return matter.Composite.create({
       bodies: [
         // Top
-        matter.Bodies.rectangle(app.view.width / 2, -wallSize / 2, app.view.width, wallSize, {
+        matter.Bodies.rectangle(width / 2, -wallSize / 2, width, wallSize, {
           isStatic: true,
         }),
         // Bottom
-        matter.Bodies.rectangle(app.view.width / 2, app.view.height + wallSize / 2, app.view.width, wallSize, {
+        matter.Bodies.rectangle(width / 2, height + wallSize / 2, width, wallSize, {
           isStatic: true,
         }),
         // Left
-        matter.Bodies.rectangle(-wallSize / 2, app.view.height / 2, wallSize, app.view.height, {
+        matter.Bodies.rectangle(-wallSize / 2, height / 2, wallSize, height, {
           isStatic: true,
         }),
         // Right
-        matter.Bodies.rectangle(app.view.width + wallSize / 2, app.view.height / 2, wallSize, app.view.height, {
+        matter.Bodies.rectangle(width + wallSize / 2, height / 2, wallSize, height, {
           isStatic: true,
         }),
       ],
@@ -135,15 +135,24 @@ export async function main() {
   }
 
   const wallSize = 1000;
-  let walls = createWalls(wallSize);
+  let walls = createWalls(wallSize, app.view.width, app.view.height);
   matter.Composite.add(engine.world, [walls, box.body]);
 
   const mousePosition = matter.Vector.create();
 
-  window.addEventListener("resize", (ev) => {
+  let maxSize = matter.Vector.magnitude(matter.Vector.create(app.view.width, app.view.height));
+
+  const onWindowSizeChange = () => {
+    const x = window.innerWidth;
+    const y = window.innerHeight;
     matter.Composite.remove(engine.world, walls);
-    walls = createWalls(wallSize);
+    walls = createWalls(wallSize, x, y);
     matter.Composite.add(engine.world, walls);
+    maxSize = matter.Vector.magnitude(matter.Vector.create(x, y));
+  };
+
+  window.addEventListener("resize", (ev) => {
+    onWindowSizeChange();
   });
 
   window.addEventListener("mousemove", (ev) => {
@@ -168,7 +177,7 @@ export async function main() {
 
   const onLaunch = (x: number, y: number) => {
     sfx.playNote();
-    player.slice(matter.Vector.create(x, y));
+    player.slice(matter.Vector.create(x, y), maxSize);
   };
 
   window.addEventListener("touchstart", (ev) => {
@@ -191,6 +200,7 @@ export async function main() {
         y: window.innerHeight / 2,
       });
       matter.Body.setVelocity(player.entity.body, { x: 0, y: 0 });
+      onWindowSizeChange();
     }
     if (playerPos.y < 0 || playerPos.y > app.view.height) {
       matter.Body.set(player.entity.body, "position", {
@@ -198,6 +208,7 @@ export async function main() {
         y: window.innerHeight / 2,
       });
       matter.Body.setVelocity(player.entity.body, { x: 0, y: 0 });
+      onWindowSizeChange();
     }
     player.update();
   });
