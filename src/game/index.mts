@@ -1,6 +1,7 @@
 import * as pixi from "pixi.js";
 
 import axios from "axios";
+import _ from "lodash";
 import matter from "matter-js";
 import { basicEntity } from "./entity.mjs";
 import { note } from "./notes.mjs";
@@ -76,7 +77,7 @@ export async function main() {
   };
 
   const modelist = [locrian, phrygian, aeolian, dorian, mixolydian, ionian, lydian];
-  let currentMode = 0;
+  let currentMode = _.random(0, modelist.length - 1);
 
   const onPlayerChange = () => {
     const cur = modelist[currentMode];
