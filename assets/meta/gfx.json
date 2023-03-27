@@ -20,6 +20,10 @@
     "name": "orange"
   },
   {
+    "path": "assets/gfx/grey.png",
+    "name": "grey"
+  },
+  {
     "path": "assets/gfx/green.png",
     "name": "green"
   },

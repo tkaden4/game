@@ -7,6 +7,16 @@ import { note } from "./notes.mjs";
 import { Player } from "./player.mjs";
 import { FontNotePlayer, NotePlayer, NoteSequence, PatternNoteSequence, PatternType } from "./sfx.mjs";
 
+function changeFavicon(path: string) {
+  let link = document.querySelector("link[rel~='icon']") as any;
+  if (!link) {
+    link = document.createElement("link")! as any;
+    link!.rel = "icon";
+    document.head.appendChild(link);
+  }
+  link.href = path;
+}
+
 export async function main() {
   // Load asset metadata
   const [gfx_meta, sfx_meta] = await Promise.all([
@@ -15,9 +25,12 @@ export async function main() {
   ]);
 
   // Load all sprites
-  const sprites: Record<string, pixi.Sprite> = {};
+  const sprites: Record<string, { sprite: pixi.Sprite; path: string }> = {};
   for (const sprite of gfx_meta) {
-    sprites[sprite.name] = pixi.Sprite.from(sprite.path);
+    sprites[sprite.name] = {
+      sprite: pixi.Sprite.from(sprite.path),
+      path: sprite.path,
+    };
   }
 
   // Load the instruments
@@ -45,11 +58,21 @@ export async function main() {
   const world = matter.World.create({});
   const engine = matter.Engine.create({ world });
 
-  const box = basicEntity(sprites.purple, {
+  const spriteList = Object.values(sprites);
+  let currentSprite = 0;
+
+  const onPlayerChange = () => {
+    const cur = spriteList[currentSprite];
+    changeFavicon(cur.path);
+    player.entity.sprite.texture = cur.sprite.texture;
+    currentSprite = (currentSprite + 1) % spriteList.length;
+  };
+
+  const box = basicEntity(sprites.grey.sprite, {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
-    w: 40,
-    h: 40,
+    w: 45,
+    h: 45,
   });
 
   const player = new Player(box);
@@ -102,6 +125,15 @@ export async function main() {
     }
   });
 
+  const onSelect = (x: number, y: number) => {
+    const pos = matter.Vector.create(x, y);
+    if (matter.Bounds.contains(box.body.bounds, pos)) {
+      onPlayerChange();
+    } else {
+      onLaunch(x, y);
+    }
+  };
+
   const onLaunch = (x: number, y: number) => {
     sfx.playNote();
     player.slice(matter.Vector.create(x, y));
@@ -111,10 +143,10 @@ export async function main() {
     const touch = ev.touches[0];
     const x = touch.pageX;
     const y = touch.pageY;
-    onLaunch(x, y);
+    onSelect(x, y);
   });
   window.addEventListener("click", (ev) => {
-    onLaunch(ev.x, ev.y);
+    onSelect(ev.x, ev.y);
   });
 
   app.ticker.add(() => {
@@ -137,6 +169,8 @@ export async function main() {
     }
     player.update();
   });
+
+  onPlayerChange();
 }
 
 window.addEventListener("load", () => {
