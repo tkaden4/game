@@ -26,7 +26,6 @@ export class FontNotePlayer implements NotePlayer {
     const howl = new Howl({
       src: fontPath,
       sprite,
-      html5: true,
     });
 
     return new Promise<FontNotePlayer>((resolve, reject) => {
