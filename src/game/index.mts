@@ -66,13 +66,13 @@ export async function main() {
   const instrument = instruments.glass;
 
   const modelist = [locrian, phrygian, aeolian, dorian, mixolydian, ionian, lydian];
-  let currentMode = _.random(0, modelist.length - 1);
+  let currentMode = 0; //_.random(0, modelist.length - 1);
 
-  const onPlayerChange = () => {
+  const onPlayerChange = (backwards: boolean) => {
+    currentMode = (modelist.length + currentMode + (backwards ? -1 : 1)) % modelist.length;
     const cur = modelist[currentMode];
     changeFavicon(cur.sprite.path);
     player.entity.sprite.texture = cur.sprite.sprite.texture;
-    currentMode = (currentMode + 1) % modelist.length;
   };
 
   const app = new pixi.Application({
@@ -156,28 +156,37 @@ export async function main() {
     }
   });
 
-  const onSelect = (x: number, y: number) => {
+  const onClicked = (x: number, y: number) => {
     const pos = matter.Vector.create(x, y);
     if (matter.Bounds.contains(box.body.bounds, pos)) {
-      onPlayerChange();
+      onPlayerChange(false);
     } else {
-      onLaunch(x, y);
+      onLaunch(x, y, false);
     }
   };
 
-  const onLaunch = (x: number, y: number) => {
+  const onRightClicked = (x: number, y: number) => {
+    const pos = matter.Vector.create(x, y);
+    if (matter.Bounds.contains(box.body.bounds, pos)) {
+      onPlayerChange(true);
+    } else {
+      onLaunch(x, y, true);
+    }
+  };
+
+  const onLaunch = (x: number, y: number, opposite: boolean) => {
     const toVector = matter.Vector.create(x, y);
     const distanceVector = matter.Vector.create(
       toVector.x - player.entity.body.position.x,
       toVector.y - player.entity.body.position.y
     );
-    const forceVector = Player.forceVector(player.entity.body.position, toVector, maxSize);
     const forceBucket = Math.floor(
       (matter.Vector.magnitude(distanceVector) / maxSize) * modelist[currentMode].notes.length
     );
 
     const note = modelist[currentMode].notes[forceBucket];
     instrument.playNote(note.chroma, note.octave);
+    const forceVector = Player.forceVector(player.entity.body.position, toVector, maxSize, opposite ? -0.5 : 0.5);
     matter.Body.applyForce(player.entity.body, player.entity.body.position, forceVector);
   };
 
@@ -185,13 +194,16 @@ export async function main() {
     const touch = event.touches[0];
     const x = touch.pageX;
     const y = touch.pageY;
-    onSelect(x, y);
+    onClicked(x, y);
   });
 
-  window.addEventListener("dragstart", (e) => {});
-
   window.addEventListener("click", (event) => {
-    onSelect(event.x, event.y);
+    onClicked(event.x, event.y);
+  });
+
+  window.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    onRightClicked(event.x, event.y);
   });
 
   app.ticker.add(() => {
@@ -221,7 +233,7 @@ export async function main() {
     }
   });
 
-  onPlayerChange();
+  onPlayerChange(false);
 
   matter.Body.setAngularVelocity(player.entity.body, Math.sign(Math.random() - 0.5) * Math.random() * 0.2 + 0.05);
 }

@@ -9,21 +9,20 @@ export class Player {
 
   constructor(public entity: Entity) {}
 
-  static forceVector(from: Vector, to: Vector, max: number) {
+  static forceVector(from: Vector, to: Vector, max: number, scalingFactor: number) {
     const rawVector = matter.Vector.create(to.x - from.x, to.y - from.y);
     const rawLength = matter.Vector.magnitude(rawVector);
     const normalized = matter.Vector.normalise(rawVector);
 
-    const scalingFactor = 0.4;
     const actualMagnitude = scalingFactor * (Math.min(rawLength, max) / max);
     return matter.Vector.mult(normalized, actualMagnitude);
   }
 
-  slice(to: Vector, maxMagnitude: number) {
+  slice(to: Vector, maxMagnitude: number, scalingFactor: number) {
     matter.Body.applyForce(
       this.entity.body,
       this.entity.body.position,
-      Player.forceVector(this.entity.body.position, to, maxMagnitude)
+      Player.forceVector(this.entity.body.position, to, maxMagnitude, scalingFactor)
     );
   }
 
