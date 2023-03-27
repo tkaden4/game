@@ -1,6 +1,6 @@
 import { Howl } from "howler";
 import _ from "lodash";
-import { note } from "./notes.mjs";
+import { note } from "./music.mjs";
 
 export interface NoteSequence {
   playNote(): void;

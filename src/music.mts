@@ -63,3 +63,27 @@ export namespace note {
     return `${n.chroma}${n.octave}`;
   }
 }
+
+export namespace modes {
+  export const locrian = {
+    notes: note.parseSeq("C5", "Db5", "Eb5", "F5", "Gb5", "Ab5", "Bb5", "C6"),
+  };
+  export const phrygian = {
+    notes: note.parseSeq("C5", "Db5", "Eb5", "F5", "G5", "Ab5", "Bb5", "C6"),
+  };
+  export const aeolian = {
+    notes: note.parseSeq("C5", "D5", "Eb5", "F5", "G5", "Ab5", "Bb5", "C6"),
+  };
+  export const dorian = {
+    notes: note.parseSeq("C5", "D5", "Eb5", "F5", "G5", "A5", "Bb5", "C6"),
+  };
+  export const mixolydian = {
+    notes: note.parseSeq("C5", "D5", "E5", "F5", "G5", "A5", "Bb5", "C6"),
+  };
+  export const ionian = {
+    notes: note.parseSeq("C5", "D5", "E5", "F5", "G5", "A5", "B5", "C6"),
+  };
+  export const lydian = {
+    notes: note.parseSeq("C5", "D5", "E5", "Gb5", "G5", "A5", "B5", "C6"),
+  };
+}
