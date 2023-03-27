@@ -42,8 +42,49 @@ export async function main() {
   }
 
   // Set up the sfx player
-  const sequence = note.parseSeq("C5", "E5", "G5", "B5", "Db6");
-  const sfx: NoteSequence = new PatternNoteSequence(instruments.pipe, sequence, PatternType.Alternating);
+  const defaultSequence = note.parseSeq("C5", "E5", "G5", "B5", "Db6", "Eb6");
+  let sfx: NoteSequence = new PatternNoteSequence(instruments.glass, defaultSequence, PatternType.Alternating);
+
+  // Player modes
+  const locrian = {
+    notes: note.parseSeq("C5", "Db5", "Eb5", "F5", "Gb5", "Ab5", "Bb5", "C6"),
+    sprite: sprites.purple,
+  };
+  const phrygian = {
+    notes: note.parseSeq("C5", "Db5", "Eb5", "F5", "G5", "Ab5", "Bb5", "C6"),
+    sprite: sprites.blue,
+  };
+  const aeolian = {
+    notes: note.parseSeq("C5", "D5", "Eb5", "F5", "G5", "Ab5", "Bb5", "C6"),
+    sprite: sprites.green,
+  };
+  const dorian = {
+    notes: note.parseSeq("C5", "D5", "Eb5", "F5", "G5", "A5", "Bb5", "C6"),
+    sprite: sprites.yellow,
+  };
+  const mixolydian = {
+    notes: note.parseSeq("C5", "D5", "E5", "F5", "G5", "A5", "Bb5", "C6"),
+    sprite: sprites.orange,
+  };
+  const ionian = {
+    notes: note.parseSeq("C5", "D5", "E5", "F5", "G5", "A5", "B5", "C6"),
+    sprite: sprites.red,
+  };
+  const lydian = {
+    notes: note.parseSeq("C5", "D5", "E5", "Gb5", "G5", "A5", "B5", "C6"),
+    sprite: sprites.pink,
+  };
+
+  const modelist = [locrian, phrygian, aeolian, dorian, mixolydian, ionian, lydian];
+  let currentMode = 0;
+
+  const onPlayerChange = () => {
+    const cur = modelist[currentMode];
+    changeFavicon(cur.sprite.path);
+    player.entity.sprite.texture = cur.sprite.sprite.texture;
+    sfx = new PatternNoteSequence(instruments.glass, cur.notes, PatternType.Alternating);
+    currentMode = (currentMode + 1) % modelist.length;
+  };
 
   const app = new pixi.Application({
     resizeTo: window,
@@ -57,16 +98,6 @@ export async function main() {
 
   const world = matter.World.create({});
   const engine = matter.Engine.create({ world });
-
-  const spriteList = Object.values(sprites);
-  let currentSprite = 0;
-
-  const onPlayerChange = () => {
-    const cur = spriteList[currentSprite];
-    changeFavicon(cur.path);
-    player.entity.sprite.texture = cur.sprite.texture;
-    currentSprite = (currentSprite + 1) % spriteList.length;
-  };
 
   const box = basicEntity(sprites.grey.sprite, {
     x: window.innerWidth / 2,
