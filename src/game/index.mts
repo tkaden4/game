@@ -95,6 +95,22 @@ export async function main() {
     },
   });
 
+  const tinyDots = _.range(0, 200).map((x) =>
+    basicEntity(new pixi.Sprite(sprites.grey.sprite.texture), {
+      x: Math.random() * app.view.width + 20,
+      y: Math.random() * app.view.height + 20,
+      w: 3,
+      h: 3,
+      r: 1,
+    })
+  );
+
+  for (const dot of tinyDots) {
+    app.stage.addChild(dot.sprite);
+    dot.sprite.alpha = 0.3;
+    matter.Composite.add(engine.world, [dot.body]);
+  }
+
   const box = basicEntity(sprites.grey.sprite, {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
@@ -162,12 +178,6 @@ export async function main() {
 
     const note = modelist[currentMode].notes[forceBucket];
     instrument.playNote(note.chroma, note.octave);
-    console.log({
-      toVector,
-      maxSize,
-      forceBucket,
-      note,
-    });
     matter.Body.applyForce(player.entity.body, player.entity.body.position, forceVector);
   };
 
@@ -205,9 +215,15 @@ export async function main() {
       onWindowSizeChange();
     }
     player.update();
+
+    for (const dot of tinyDots) {
+      dot.update();
+    }
   });
 
   onPlayerChange();
+
+  matter.Body.setAngularVelocity(player.entity.body, Math.sign(Math.random() - 0.5) * Math.random() * 0.2 + 0.05);
 }
 
 window.addEventListener("load", () => {
