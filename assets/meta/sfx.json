@@ -1,5 +1,9 @@
 [
   {
+    "path": "assets/sfx/fonts/wurli.wav",
+    "name": "wurli"
+  },
+  {
     "path": "assets/sfx/fonts/pipe.mp3",
     "name": "pipe"
   },

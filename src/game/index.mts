@@ -44,7 +44,7 @@ export async function main() {
 
   // Set up the sfx player
   const defaultSequence = note.parseSeq("C5", "E5", "G5", "B5", "Db6", "Eb6");
-  let sfx: NoteSequence = new PatternNoteSequence(instruments.glass, defaultSequence, PatternType.Alternating);
+  let sfx: NoteSequence = new PatternNoteSequence(instruments.wurli, defaultSequence, PatternType.Alternating);
 
   // Player modes
   const locrian = {
@@ -83,7 +83,7 @@ export async function main() {
     const cur = modelist[currentMode];
     changeFavicon(cur.sprite.path);
     player.entity.sprite.texture = cur.sprite.sprite.texture;
-    sfx = new PatternNoteSequence(instruments.glass, cur.notes, PatternType.Alternating);
+    sfx = new PatternNoteSequence(instruments.wurli, cur.notes, PatternType.Alternating);
     currentMode = (currentMode + 1) % modelist.length;
   };
 
@@ -98,7 +98,14 @@ export async function main() {
   app.renderer.events.cursorStyles.default = "crosshair";
 
   const world = matter.World.create({});
-  const engine = matter.Engine.create({ world });
+  const engine = matter.Engine.create({
+    world,
+    gravity: {
+      scale: 1,
+      x: 0,
+      y: 0.0005,
+    },
+  });
 
   const box = basicEntity(sprites.grey.sprite, {
     x: window.innerWidth / 2,

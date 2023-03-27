@@ -38787,7 +38787,7 @@ ${e2}`);
       instruments[instrument.name] = await FontNotePlayer.load(instrument.path, 2e3, C2, C8);
     }
     const defaultSequence = note.parseSeq("C5", "E5", "G5", "B5", "Db6", "Eb6");
-    let sfx = new PatternNoteSequence(instruments.glass, defaultSequence, 2 /* Alternating */);
+    let sfx = new PatternNoteSequence(instruments.wurli, defaultSequence, 2 /* Alternating */);
     const locrian = {
       notes: note.parseSeq("C5", "Db5", "Eb5", "F5", "Gb5", "Ab5", "Bb5", "C6"),
       sprite: sprites.purple
@@ -38822,7 +38822,7 @@ ${e2}`);
       const cur = modelist[currentMode];
       changeFavicon(cur.sprite.path);
       player.entity.sprite.texture = cur.sprite.sprite.texture;
-      sfx = new PatternNoteSequence(instruments.glass, cur.notes, 2 /* Alternating */);
+      sfx = new PatternNoteSequence(instruments.wurli, cur.notes, 2 /* Alternating */);
       currentMode = (currentMode + 1) % modelist.length;
     };
     const app = new Application({
@@ -38833,7 +38833,14 @@ ${e2}`);
     document.body.appendChild(app.view);
     app.renderer.events.cursorStyles.default = "crosshair";
     const world = import_matter_js3.default.World.create({});
-    const engine = import_matter_js3.default.Engine.create({ world });
+    const engine = import_matter_js3.default.Engine.create({
+      world,
+      gravity: {
+        scale: 1,
+        x: 0,
+        y: 5e-4
+      }
+    });
     const box = basicEntity(sprites.grey.sprite, {
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
