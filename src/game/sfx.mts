@@ -13,12 +13,12 @@ export interface NotePlayer {
 export class FontNotePlayer implements NotePlayer {
   private howl: Howl;
 
-  static async load(fontPath: string, length: number, startNote: note.Note, endNote: note.Note) {
+  static async load(fontPath: string, offsets: number, length: number, startNote: note.Note, endNote: note.Note) {
     const sprites: Array<[string, [start: number, end: number]]> = [];
     let n = startNote;
     const goalPost = note.inc(endNote);
     for (let i = 0; !note.eq(n, goalPost); ++i) {
-      sprites.push([note.toString(n), [i * length, length]]);
+      sprites.push([note.toString(n), [i * offsets, length]]);
       n = note.inc(n);
     }
     const sprite = Object.fromEntries(sprites);
@@ -26,6 +26,7 @@ export class FontNotePlayer implements NotePlayer {
     const howl = new Howl({
       src: fontPath,
       sprite,
+      html5: true,
     });
 
     return new Promise<FontNotePlayer>((resolve, reject) => {

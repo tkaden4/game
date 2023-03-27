@@ -39,7 +39,7 @@ export async function main() {
   const C8 = note.create("C", 8);
   const instruments: Record<string, NotePlayer> = {};
   for (const instrument of sfx_meta) {
-    instruments[instrument.name] = await FontNotePlayer.load(instrument.path, 2000, C2, C8);
+    instruments[instrument.name] = await FontNotePlayer.load(instrument.path, 2000, 1900, C2, C8);
   }
 
   // Player modes
